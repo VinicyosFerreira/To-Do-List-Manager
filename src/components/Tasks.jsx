@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Button from './Button';
 import AddIcon from '../assets/icons/addIcon.svg?react';
 import TrashIcon from '../assets/icons/trashIcon.svg?react';
@@ -5,8 +6,16 @@ import SunIcon from '../assets/icons/sun.svg?react';
 import CloudSunIcon from '../assets/icons/cloud-sun.svg?react';
 import MoonIcon from '../assets/icons/moon.svg?react';
 import TasksSeparator from './TasksSeparator';
+import TASKS from '../constant/tasks';
+import TaskItem from './TaskItem';
 
 const Tasks = () => {
+   const [tasks] = useState(TASKS);
+
+   const morningTasks = tasks.filter((task) => task.period === 'manhã');
+   const afternoonTasks = tasks.filter((task) => task.period === 'tarde');
+   const eveningTasks = tasks.filter((task) => task.period === 'evening');
+
    return (
       <div className="w-full px-8 py-16">
          <div className="flex w-full justify-between">
@@ -37,16 +46,27 @@ const Tasks = () => {
             {/* MANHÃ */}
             <div className="space-y-3">
                <TasksSeparator title="Manhã" icon={<SunIcon />} />
+               {morningTasks.map((task) => (
+                  <TaskItem task={task} />
+               ))}
             </div>
 
             {/* TARDE */}
             <div className="my-6 space-y-3">
                <TasksSeparator title="Tarde" icon={<CloudSunIcon />} />
+               {afternoonTasks.map((task) => (
+                  <p>
+                     <TaskItem task={task} />
+                  </p>
+               ))}
             </div>
 
             {/* NOITE */}
             <div className="space-y-3">
                <TasksSeparator title="Noite" icon={<MoonIcon />} />
+               {eveningTasks.map((task) => (
+                  <TaskItem task={task} />
+               ))}
             </div>
          </div>
       </div>
