@@ -4,7 +4,7 @@ import HomeIcon from '../assets/icons/HomeIcon.svg?react';
 
 const Sidebar = () => {
    return (
-      <div className="h-screen w-64 bg-[#fff]">
+      <div className="vh-100 w-64 bg-[#fff]">
          <div className="space-y-1 px-8 py-6">
             <h1 className="text-xl font-semibold text-[#00ADB5]">
                Task Manager
