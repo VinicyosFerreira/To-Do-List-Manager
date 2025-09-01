@@ -1,6 +1,6 @@
 import './AddTaskDialog.css';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { CSSTransition } from 'react-transition-group';
 import { v4 } from 'uuid';
@@ -14,6 +14,14 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog, handleSubmit }) => {
    const [description, setDescription] = useState('');
    const [period, setPeriod] = useState('morning');
    const nodeRef = useRef(null);
+
+   useEffect(() => {
+      if (!isOpen) {
+         setDescription('');
+         setTitle('');
+         setPeriod('morning');
+      }
+   }, [isOpen]);
 
    const handleSaveClick = () => {
       const newTask = {
@@ -56,10 +64,12 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog, handleSubmit }) => {
                            label={'Titulo'}
                            id={'title'}
                            placeholder="Titulo"
+                           value={title}
                            onChange={(e) => setTitle(e.target.value)}
                         />
 
                         <PeriodSelect
+                           value={period}
                            onChange={(e) => setPeriod(e.target.value)}
                         />
 
@@ -67,6 +77,7 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog, handleSubmit }) => {
                            label={'Descrição'}
                            id={'description'}
                            placeholder="Descrição"
+                           value={description}
                            onChange={(e) => setDescription(e.target.value)}
                         />
 
