@@ -18,8 +18,8 @@ const Tasks = () => {
    const [tasks, setTasks] = useState(TASKS);
    const [isOpenDialog, setIsOpenDialog] = useState(false);
 
-   const morningTasks = tasks.filter((task) => task.period === 'manhã');
-   const afternoonTasks = tasks.filter((task) => task.period === 'tarde');
+   const morningTasks = tasks.filter((task) => task.period === 'morning');
+   const afternoonTasks = tasks.filter((task) => task.period === 'afternoon');
    const eveningTasks = tasks.filter((task) => task.period === 'evening');
 
    const handleTaskCheckboxChange = (taskId) => {
@@ -54,6 +54,12 @@ const Tasks = () => {
       toast.success('Tarefa excluida com sucesso!');
    };
 
+   const handleAddTasks = (newTask) => {
+      console.log(newTask);
+      console.log(tasks);
+      setTasks([...tasks, newTask]);
+   };
+
    return (
       <div className="w-full space-y-6 px-8 py-16">
          <div className="flex w-full justify-between">
@@ -80,6 +86,7 @@ const Tasks = () => {
                <AddTaskDialog
                   isOpen={isOpenDialog}
                   handleCloseDialog={() => setIsOpenDialog(false)}
+                  handleSubmit={handleAddTasks}
                />
             </div>
          </div>
