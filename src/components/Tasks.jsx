@@ -72,12 +72,15 @@ const Tasks = () => {
                   <TrashIcon />
                </Button>
 
-               <Button variant="primary" onClick={() => setIsOpenDialog(true)}>
+               <Button onClick={() => setIsOpenDialog(true)}>
                   Nova Tarefa
                   <AddIcon />
                </Button>
 
-               <AddTaskDialog isOpen={isOpenDialog} />
+               <AddTaskDialog
+                  isOpen={isOpenDialog}
+                  handleCloseDialog={() => setIsOpenDialog(false)}
+               />
             </div>
          </div>
 
