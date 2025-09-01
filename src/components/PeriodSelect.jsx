@@ -1,0 +1,19 @@
+import InputLabel from './InputLabel';
+
+const PeriodSelect = () => {
+   return (
+      <div className="flex flex-col gap-1 text-left">
+         <InputLabel htmlFor="period">Horário</InputLabel>
+         <select
+            id="period"
+            className="placeholder:[#9A9C9F] rounded-lg border border-solid border-[#ECECEC] px-4 py-3 outline-[#00ADB5] placeholder:text-sm"
+         >
+            <option value="morning">Manhã</option>
+            <option value="afternoon">Tarde</option>
+            <option value="evening">Noite</option>
+         </select>
+      </div>
+   );
+};
+
+export default PeriodSelect;

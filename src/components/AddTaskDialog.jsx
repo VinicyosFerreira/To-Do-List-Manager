@@ -6,6 +6,7 @@ import { CSSTransition } from 'react-transition-group';
 
 import Button from './Button';
 import Input from './Input';
+import PeriodSelect from './PeriodSelect';
 
 const AddTaskDialog = ({ isOpen, handleCloseDialog }) => {
    const nodeRef = useRef(null);
@@ -39,16 +40,14 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog }) => {
                            id={'title'}
                            placeholder="Titulo"
                         />
-                        <Input
-                           label={'Horário'}
-                           id={'period'}
-                           placeholder="Horário"
-                        />
+
                         <Input
                            label={'Descrição'}
                            id={'description'}
                            placeholder="Descrição"
                         />
+
+                        <PeriodSelect />
 
                         <div className="flex justify-center gap-3">
                            <Button
