@@ -13,6 +13,7 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog, handleSubmit }) => {
    const [title, setTitle] = useState('');
    const [description, setDescription] = useState('');
    const [period, setPeriod] = useState('morning');
+   const [errors, setErrors] = useState([]);
    const nodeRef = useRef(null);
 
    useEffect(() => {
@@ -24,8 +25,33 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog, handleSubmit }) => {
    }, [isOpen]);
 
    const handleSaveClick = () => {
-      if (!title.trim() || !description.trim() || !period.trim()) {
-         return alert('Preencha todos os campos !');
+      const newErrors = [];
+
+      if (!title.trim()) {
+         newErrors.push({
+            title: 'title',
+            message: 'O campo de titulo é obrigatório',
+         });
+      }
+
+      if (!description.trim()) {
+         newErrors.push({
+            description: 'description',
+            message: 'O campo de descrição é obrigatório',
+         });
+      }
+
+      if (!period.trim()) {
+         newErrors.push({
+            period: 'period',
+            message: 'O campo de horário  é obrigatório',
+         });
+      }
+
+      if (newErrors.length > 0) {
+         setErrors(newErrors);
+         console.log(errors);
+         return;
       }
 
       const newTask = {
@@ -39,6 +65,12 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog, handleSubmit }) => {
       handleSubmit(newTask);
       handleCloseDialog();
    };
+
+   const titleError = errors.find((error) => error.title === 'title');
+   const descriptionError = errors.find(
+      (error) => error.description === 'description'
+   );
+   const periodError = errors.find((error) => error.period === 'period');
 
    return (
       <CSSTransition
@@ -70,11 +102,13 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog, handleSubmit }) => {
                            placeholder="Titulo"
                            value={title}
                            onChange={(e) => setTitle(e.target.value)}
+                           error={titleError}
                         />
 
                         <PeriodSelect
                            value={period}
                            onChange={(e) => setPeriod(e.target.value)}
+                           error={periodError}
                         />
 
                         <Input
@@ -82,6 +116,7 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog, handleSubmit }) => {
                            id={'description'}
                            placeholder="Descrição"
                            value={description}
+                           error={descriptionError}
                            onChange={(e) => setDescription(e.target.value)}
                         />
 
