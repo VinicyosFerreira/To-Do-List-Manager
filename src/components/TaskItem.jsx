@@ -7,10 +7,10 @@ const TaskItem = ({ task, handleCheckboxChange, handleDeleteClick }) => {
          return 'bg-[#00ADB51A]  text-[#002C2E]';
       }
       if (task.status === 'in_progress') {
-         return 'bg-[#FFAA04] text-[#FFAA04]';
+         return 'bg-brand-process text-brand-process';
       }
       if (task.status === 'not_started') {
-         return 'bg-[#35383E0D] text-[#35383E]';
+         return 'bg-brand-dark-blue bg-opacity-5 text-brand-dark-blue';
       }
    };
 

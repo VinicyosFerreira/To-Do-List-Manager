@@ -133,6 +133,6 @@
    }
 
    body {
-      @apply bg-[#EDEDED];
+      @apply bg-brand-background;
    }
 }
