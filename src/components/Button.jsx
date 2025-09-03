@@ -1,3 +1,5 @@
+import { tv } from 'tailwind-variants';
+
 function Button({
    children,
    variant = 'primary',
@@ -5,6 +7,10 @@ function Button({
    className,
    ...rest
 }) {
+   const button = tv({
+      base: 'flex justify-center gap-2 rounded-md bg-brand-primary px-3 text-xs font-semibold',
+   });
+
    const getVariantClass = () => {
       if (variant === 'primary') {
          return 'bg-brand-primary text-white';
@@ -32,6 +38,7 @@ function Button({
          className={`flex justify-center gap-2 rounded-md bg-brand-primary px-3 text-xs font-semibold ${getVariantClass()} ${getSizeClass()} transition hover:opacity-75 ${className}`}
          {...rest}
       >
+         <p className={`${button}`}></p>
          {children}
       </button>
    );
