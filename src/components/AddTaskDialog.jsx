@@ -1,6 +1,6 @@
 import './AddTaskDialog.css';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { CSSTransition } from 'react-transition-group';
 import { v4 } from 'uuid';
@@ -10,22 +10,18 @@ import Input from './Input';
 import PeriodSelect from './PeriodSelect';
 
 const AddTaskDialog = ({ isOpen, handleCloseDialog, handleSubmit }) => {
-   const [title, setTitle] = useState('');
-   const [description, setDescription] = useState('');
-   const [period, setPeriod] = useState('morning');
    const [errors, setErrors] = useState([]);
    const nodeRef = useRef(null);
-
-   useEffect(() => {
-      if (!isOpen) {
-         setDescription('');
-         setTitle('');
-         setPeriod('morning');
-      }
-   }, [isOpen]);
+   const titleRef = useRef(null);
+   const descriptionRef = useRef(null);
+   const periodRef = useRef(null);
 
    const handleSaveClick = () => {
       const newErrors = [];
+
+      const title = titleRef.current.value;
+      const description = descriptionRef.current.value;
+      const period = periodRef.current.value;
 
       if (!title.trim()) {
          newErrors.push({
@@ -100,14 +96,13 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog, handleSubmit }) => {
                            label={'Titulo'}
                            id={'title'}
                            placeholder="Titulo"
-                           value={title}
-                           onChange={(e) => setTitle(e.target.value)}
                            error={titleError}
+                           ref={titleRef}
                         />
 
                         <PeriodSelect
-                           value={period}
-                           onChange={(e) => setPeriod(e.target.value)}
+                           id="period"
+                           ref={periodRef}
                            error={periodError}
                         />
 
@@ -115,9 +110,8 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog, handleSubmit }) => {
                            label={'Descrição'}
                            id={'description'}
                            placeholder="Descrição"
-                           value={description}
                            error={descriptionError}
-                           onChange={(e) => setDescription(e.target.value)}
+                           ref={descriptionRef}
                         />
 
                         <div className="flex justify-center gap-3">
