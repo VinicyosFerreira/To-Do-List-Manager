@@ -8,7 +8,8 @@
       "build": "vite build",
       "lint": "eslint .",
       "preview": "vite preview",
-      "prepare": "husky"
+      "prepare": "husky",
+      "server": "json-server --watch db.json --port 3000"
    },
    "dependencies": {
       "react": "^19.1.1",
@@ -31,6 +32,7 @@
       "eslint-plugin-simple-import-sort": "^12.1.1",
       "globals": "^16.3.0",
       "husky": "^9.1.7",
+      "json-server": "^1.0.0-beta.3",
       "lint-staged": "^16.1.5",
       "postcss": "^8.4.38",
       "prettier": "^3.6.2",
