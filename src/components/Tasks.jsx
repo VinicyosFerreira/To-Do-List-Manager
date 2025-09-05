@@ -60,12 +60,22 @@ const Tasks = () => {
       setTasks(newTasks);
    };
 
-   const handleTaskDeleteClick = (taskId) => {
+   const handleTaskDeleteClick = async (taskId) => {
+      try {
+         const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
+            method: 'DELETE',
+         });
+         if (!response.ok) {
+            throw new Error('Erro ao deletar tarefa');
+         }
+      } catch (error) {
+         toast.error('Erro ao deletar tarefa');
+         console.log(error);
+      }
       const newTasks = tasks.filter((task) => task.id !== taskId);
       setTasks(newTasks);
       toast.success('Tarefa excluida com sucesso!');
    };
-
    const handleAddTasks = async (newTask) => {
       try {
          const response = await fetch('http://localhost:3000/tasks', {
@@ -73,13 +83,14 @@ const Tasks = () => {
             headers: {
                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(1111),
+            body: JSON.stringify(newTask),
          });
 
          if (!response.ok) {
             throw new Error('Erro ao criar tarefa. Tente novamente');
          }
 
+         toast.success('Tarefa criada com sucesso!');
          setTasks([...tasks, newTask]);
       } catch (error) {
          toast.error('Erro ao criar tarefa');
