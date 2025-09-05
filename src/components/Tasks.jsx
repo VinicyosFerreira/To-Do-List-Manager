@@ -66,10 +66,25 @@ const Tasks = () => {
       toast.success('Tarefa excluida com sucesso!');
    };
 
-   const handleAddTasks = (newTask) => {
-      console.log(newTask);
-      console.log(tasks);
-      setTasks([...tasks, newTask]);
+   const handleAddTasks = async (newTask) => {
+      try {
+         const response = await fetch('http://localhost:3000/tasks', {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(1111),
+         });
+
+         if (!response.ok) {
+            throw new Error('Erro ao criar tarefa. Tente novamente');
+         }
+
+         setTasks([...tasks, newTask]);
+      } catch (error) {
+         toast.error('Erro ao criar tarefa');
+         console.log(error);
+      }
    };
 
    return (
