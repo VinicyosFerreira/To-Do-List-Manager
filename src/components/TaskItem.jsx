@@ -76,7 +76,10 @@ const TaskItem = ({ task, handleCheckboxChange, onDeleteSuccess }) => {
                )}
             </Button>
 
-            <a href="#" className="transition hover:opacity-75">
+            <a
+               href={`/task/${task.id}`}
+               className="transition hover:opacity-75"
+            >
                <DetailsIcon />
             </a>
          </div>
