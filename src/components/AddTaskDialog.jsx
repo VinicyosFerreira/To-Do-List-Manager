@@ -121,12 +121,14 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog, onSubmitSucess }) => {
                            placeholder="Titulo"
                            error={titleError}
                            ref={titleRef}
+                           disabled={isLoading}
                         />
 
                         <PeriodSelect
                            id="period"
                            ref={periodRef}
                            error={periodError}
+                           disabled={isLoading}
                         />
 
                         <Input
@@ -135,6 +137,7 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog, onSubmitSucess }) => {
                            placeholder="Descrição"
                            error={descriptionError}
                            ref={descriptionRef}
+                           disabled={isLoading}
                         />
 
                         <div className="flex justify-center gap-3">
