@@ -66,26 +66,9 @@ const Tasks = () => {
       toast.success('Tarefa excluida com sucesso!');
    };
 
-   const handleAddTasks = async (newTask) => {
-      try {
-         const response = await fetch('http://localhost:3000/tasks', {
-            method: 'POST',
-            headers: {
-               'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(newTask),
-         });
-
-         if (!response.ok) {
-            throw new Error('Erro ao criar tarefa. Tente novamente');
-         }
-
-         toast.success('Tarefa criada com sucesso!');
-         setTasks([...tasks, newTask]);
-      } catch (error) {
-         toast.error('Erro ao criar tarefa');
-         console.log(error);
-      }
+   const onTasksSubmitSuccess = async (newTask) => {
+      toast.success('Tarefa criada com sucesso!');
+      setTasks([...tasks, newTask]);
    };
 
    return (
@@ -114,7 +97,7 @@ const Tasks = () => {
                <AddTaskDialog
                   isOpen={isOpenDialog}
                   handleCloseDialog={() => setIsOpenDialog(false)}
-                  handleSubmit={handleAddTasks}
+                  onSubmitSucess={onTasksSubmitSuccess}
                />
             </div>
          </div>

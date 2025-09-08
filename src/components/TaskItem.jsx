@@ -10,7 +10,6 @@ const TaskItem = ({ task, handleCheckboxChange, onDeleteSuccess }) => {
    const handleDeleteClick = async () => {
       setDeleteIsLoading(true);
       try {
-         await new Promise((resolve) => setTimeout(resolve, 5000));
          const response = await fetch(
             `http://localhost:3000/tasks/${task.id}`,
             {

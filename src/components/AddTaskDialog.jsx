@@ -3,20 +3,23 @@ import './AddTaskDialog.css';
 import { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { CSSTransition } from 'react-transition-group';
+import { toast } from 'sonner';
 import { v4 } from 'uuid';
 
 import Button from './Button';
 import Input from './Input';
 import PeriodSelect from './PeriodSelect';
 
-const AddTaskDialog = ({ isOpen, handleCloseDialog, handleSubmit }) => {
+const AddTaskDialog = ({ isOpen, handleCloseDialog, onSubmitSucess }) => {
    const [errors, setErrors] = useState([]);
+   const [isLoading, setIsLoading] = useState(false);
    const nodeRef = useRef(null);
    const titleRef = useRef(null);
    const descriptionRef = useRef(null);
    const periodRef = useRef(null);
 
-   const handleSaveClick = () => {
+   const handleSaveClick = async () => {
+      setIsLoading(true);
       const newErrors = [];
 
       const title = titleRef.current.value;
@@ -58,7 +61,27 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog, handleSubmit }) => {
          status: 'not_started',
       };
 
-      handleSubmit(newTask);
+      await new Promise((resolve) => setTimeout(resolve, 4000));
+      try {
+         const response = await fetch('http://localhost:3000/tasks', {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newTask),
+         });
+
+         if (!response.ok) {
+            throw new Error('Erro ao criar tarefa. Tente novamente');
+         }
+      } catch (error) {
+         toast.error('Erro ao criar tarefa');
+         console.log(error);
+      } finally {
+         setIsLoading(false);
+      }
+
+      onSubmitSucess(newTask);
       handleCloseDialog();
    };
 
@@ -127,8 +150,9 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog, handleSubmit }) => {
                               size="large"
                               className="w-full"
                               onClick={handleSaveClick}
+                              disabled={isLoading}
                            >
-                              Salvar
+                              {isLoading ? 'Salvando ...' : 'Salvar'}
                            </Button>
                         </div>
                      </div>
