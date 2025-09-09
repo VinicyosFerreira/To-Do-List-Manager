@@ -1,36 +1,9 @@
 {
   "tasks": [
     {
-      "id": "ccd28f6c-2c0b-423c-8eb5-c789e062a753",
-      "title": "momento devocional",
-      "description": "oração e gratidão",
-      "period": "evening",
-      "status": "not_started"
-    },
-    {
-      "id": "1c4a",
-      "newTask": {
-        "id": "25ba0f61-ecae-4f0b-acdd-8c3ff787b279",
-        "title": "dsadsa",
-        "description": "dsadas",
-        "period": "morning",
-        "status": "not_started"
-      }
-    },
-    {
-      "id": "4982",
-      "newTask": {
-        "id": "f4cefd23-2149-47f8-b554-74ea520f0c94",
-        "title": "teste",
-        "description": "aaaa",
-        "period": "morning",
-        "status": "not_started"
-      }
-    },
-    {
-      "id": "94a38208-430b-4232-b2ea-73ce684b63f9",
-      "title": "dasdsa",
-      "description": "sdadsa",
+      "id": "83b2b39c-8879-4215-aa6c-75927fefcccd",
+      "title": "nova",
+      "description": "dsada131321",
       "period": "afternoon",
       "status": "not_started"
     }

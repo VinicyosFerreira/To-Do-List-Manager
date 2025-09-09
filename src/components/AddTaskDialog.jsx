@@ -61,7 +61,6 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog, onSubmitSucess }) => {
          status: 'not_started',
       };
 
-      await new Promise((resolve) => setTimeout(resolve, 4000));
       try {
          const response = await fetch('http://localhost:3000/tasks', {
             method: 'POST',
@@ -75,8 +74,7 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog, onSubmitSucess }) => {
             throw new Error('Erro ao criar tarefa. Tente novamente');
          }
       } catch (error) {
-         toast.error('Erro ao criar tarefa');
-         console.log(error);
+         toast.error(error);
       } finally {
          setIsLoading(false);
       }
