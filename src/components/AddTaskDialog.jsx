@@ -1,7 +1,8 @@
 import './AddTaskDialog.css';
 
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { useForm } from 'react-hook-form';
 import { CSSTransition } from 'react-transition-group';
 import { toast } from 'sonner';
 import { v4 } from 'uuid';
@@ -11,53 +12,26 @@ import Input from './Input';
 import PeriodSelect from './PeriodSelect';
 
 const AddTaskDialog = ({ isOpen, handleCloseDialog, onSubmitSucess }) => {
-   const [errors, setErrors] = useState([]);
-   const [isLoading, setIsLoading] = useState(false);
    const nodeRef = useRef(null);
-   const titleRef = useRef(null);
-   const descriptionRef = useRef(null);
-   const periodRef = useRef(null);
+   const {
+      register,
+      formState: { errors, isSubmitting },
+      handleSubmit,
+      reset,
+   } = useForm({
+      defaultValues: {
+         title: '',
+         description: '',
+         period: 'morning',
+      },
+   });
 
-   const handleSaveClick = async () => {
-      setIsLoading(true);
-      const newErrors = [];
-
-      const title = titleRef.current.value;
-      const description = descriptionRef.current.value;
-      const period = periodRef.current.value;
-
-      if (!title.trim()) {
-         newErrors.push({
-            title: 'title',
-            message: 'O campo de titulo é obrigatório',
-         });
-      }
-
-      if (!description.trim()) {
-         newErrors.push({
-            description: 'description',
-            message: 'O campo de descrição é obrigatório',
-         });
-      }
-
-      if (!period.trim()) {
-         newErrors.push({
-            period: 'period',
-            message: 'O campo de horário  é obrigatório',
-         });
-      }
-
-      setErrors(newErrors);
-
-      if (newErrors.length > 0) {
-         return;
-      }
-
+   const handleSaveClick = async (data) => {
       const newTask = {
          id: v4(),
-         title: title,
-         description: description,
-         period: period,
+         title: data.title.trim(),
+         description: data.description,
+         period: data.period.trim(),
          status: 'not_started',
       };
 
@@ -75,19 +49,25 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog, onSubmitSucess }) => {
          }
       } catch (error) {
          toast.error(error);
-      } finally {
-         setIsLoading(false);
       }
 
       onSubmitSucess(newTask);
       handleCloseDialog();
+      reset({
+         title: '',
+         description: '',
+         period: 'morning',
+      });
    };
 
-   const titleError = errors.find((error) => error.title === 'title');
-   const descriptionError = errors.find(
-      (error) => error.description === 'description'
-   );
-   const periodError = errors.find((error) => error.period === 'period');
+   const handleCancelClick = () => {
+      reset({
+         title: '',
+         description: '',
+         period: 'morning',
+      });
+      handleCloseDialog();
+   };
 
    return (
       <CSSTransition
@@ -112,30 +92,57 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog, onSubmitSucess }) => {
                         Insira as informações abaixo
                      </p>
 
-                     <div className="flex w-[336px] flex-col space-y-4">
+                     <form
+                        className="flex w-[336px] flex-col space-y-4"
+                        onSubmit={handleSubmit(handleSaveClick)}
+                     >
                         <Input
                            label={'Titulo'}
                            id={'title'}
                            placeholder="Titulo"
-                           error={titleError}
-                           ref={titleRef}
-                           disabled={isLoading}
+                           disabled={isSubmitting}
+                           {...register('title', {
+                              required: 'O titulo é obrigatório',
+                              validate: (value) => {
+                                 if (!value.trim()) {
+                                    return 'O titulo não pode ser vazio';
+                                 }
+                                 return true;
+                              },
+                           })}
+                           error={errors?.title}
                         />
 
                         <PeriodSelect
                            id="period"
-                           ref={periodRef}
-                           error={periodError}
-                           disabled={isLoading}
+                           disabled={isSubmitting}
+                           {...register('period', {
+                              required: 'O horário é obrigatório',
+                              validate: (value) => {
+                                 if (!value.trim()) {
+                                    return 'O horário não pode ser vazio';
+                                 }
+                                 return true;
+                              },
+                           })}
+                           error={errors?.period}
                         />
 
                         <Input
                            label={'Descrição'}
                            id={'description'}
                            placeholder="Descrição"
-                           error={descriptionError}
-                           ref={descriptionRef}
-                           disabled={isLoading}
+                           disabled={isSubmitting}
+                           {...register('description', {
+                              required: 'A descrição é obrigatória',
+                              validate: (value) => {
+                                 if (!value.trim()) {
+                                    return 'A descrição não pode ser vazia';
+                                 }
+                                 return true;
+                              },
+                           })}
+                           error={errors?.description}
                         />
 
                         <div className="flex justify-center gap-3">
@@ -143,20 +150,21 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog, onSubmitSucess }) => {
                               size="large"
                               color="secondary"
                               className="w-full"
-                              onClick={handleCloseDialog}
+                              type="button"
+                              onClick={handleCancelClick}
                            >
                               Cancelar
                            </Button>
                            <Button
                               size="large"
                               className="w-full"
-                              onClick={handleSaveClick}
-                              disabled={isLoading}
+                              type="submit"
+                              disabled={isSubmitting}
                            >
-                              {isLoading ? 'Salvando ...' : 'Salvar'}
+                              {isSubmitting ? 'Salvando ...' : 'Salvar'}
                            </Button>
                         </div>
-                     </div>
+                     </form>
                   </div>
                </div>,
                document.body
