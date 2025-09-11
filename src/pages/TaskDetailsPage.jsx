@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -16,13 +17,21 @@ import Sidebar from '../components/Sidebar';
 const TaskDetailsPage = () => {
    const { id: taskId } = useParams();
    const [task, setTask] = useState();
-   const [errors, setErrors] = useState([]);
-   const [saveIsLoading, setSaveIsLoading] = useState(false);
    const [deleteIsLoading, setDeleteIsLoading] = useState(false);
    const navigate = useNavigate();
-   const titleRef = useRef(null);
-   const descriptionRef = useRef(null);
-   const periodRef = useRef(null);
+
+   const {
+      register,
+      formState: { errors, isSubmitting },
+      handleSubmit,
+      reset,
+   } = useForm({
+      defaultValues: {
+         title: task?.title,
+         description: task?.description,
+         period: task?.period,
+      },
+   });
 
    const handleBackClick = () => {
       navigate(-1);
@@ -36,74 +45,33 @@ const TaskDetailsPage = () => {
             );
             const data = await response.json();
             setTask(data);
+            reset(data);
          } catch (error) {
             console.log(error);
          }
       };
       fetchTasks();
-   }, [taskId]);
+   }, [taskId, reset]);
 
-   const handleEditClick = async () => {
-      setSaveIsLoading(true);
-      const newErrors = [];
-
-      const title = titleRef.current.value;
-      const description = descriptionRef.current.value;
-      const period = periodRef.current.value;
-
-      if (!title.trim()) {
-         newErrors.push({
-            title: 'title',
-            message: 'O campo de titulo é obrigatório',
-         });
-      }
-
-      if (!description.trim()) {
-         newErrors.push({
-            description: 'description',
-            message: 'O campo de descrição é obrigatório',
-         });
-      }
-
-      if (!period.trim()) {
-         newErrors.push({
-            period: 'period',
-            message: 'O campo de horário  é obrigatório',
-         });
-      }
-
-      setErrors(newErrors);
-
-      if (newErrors.length > 0) {
-         return;
-      }
-
-      const editTask = {
-         title: title,
-         description: description,
-         period: period,
-      };
-
+   const handleEditClick = async (data) => {
       try {
          const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
             method: 'PATCH',
             headers: {
                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(editTask),
+            body: JSON.stringify(data),
          });
 
          if (!response.ok) {
             throw new Error('Erro ao editar tarefa. Tente novamente');
          }
 
-         const data = await response.json();
-         setTask(data);
+         const responseData = await response.json();
+         setTask(responseData);
          toast.success('Tarefa editada com sucesso!');
       } catch (error) {
          toast.error(error);
-      } finally {
-         setSaveIsLoading(false);
       }
    };
 
@@ -128,12 +96,6 @@ const TaskDetailsPage = () => {
          setDeleteIsLoading(false);
       }
    };
-
-   const titleError = errors.find((error) => error.title === 'title');
-   const descriptionError = errors.find(
-      (error) => error.description === 'description'
-   );
-   const periodError = errors.find((error) => error.period === 'period');
 
    return (
       <div className="flex">
@@ -185,47 +147,70 @@ const TaskDetailsPage = () => {
             </div>
 
             {/* corpo com inputs das tarefas */}
-            <div className="w-full space-y-3 rounded-xl bg-brand-white p-6">
-               <div>
-                  <Input
-                     label="Nome"
-                     defaultValue={task?.title}
-                     id="title"
-                     ref={titleRef}
-                     error={titleError}
-                  />
+            <form onSubmit={handleSubmit(handleEditClick)}>
+               <div className="w-full space-y-3 rounded-xl bg-brand-white p-6">
+                  <div>
+                     <Input
+                        label="Nome"
+                        id="title"
+                        {...register('title', {
+                           required: 'O título é obrigatório',
+                           validate: (value) => {
+                              if (!value.trim()) {
+                                 return 'O título não pode ser vazio';
+                              }
+                              return true;
+                           },
+                        })}
+                        error={errors?.title}
+                     />
+                  </div>
+                  <div>
+                     <PeriodSelect
+                        label="Horário"
+                        id="period"
+                        {...register('period', {
+                           required: 'O horário é obrigatório',
+                           validate: (value) => {
+                              if (!value.trim()) {
+                                 return 'O horário não pode ser vazio';
+                              }
+                              return true;
+                           },
+                        })}
+                        error={errors?.period}
+                     />
+                  </div>
+                  <div>
+                     <Input
+                        label="Descrição"
+                        id="description"
+                        {...register('description', {
+                           required: 'A descrição é obrigatória',
+                           validate: (value) => {
+                              if (!value.trim()) {
+                                 return 'A descrição não pode ser vazia';
+                              }
+                              return true;
+                           },
+                        })}
+                        error={errors?.description}
+                     />
+                  </div>
                </div>
-               <div>
-                  <PeriodSelect
-                     label="Horário"
-                     defaultValue={task?.period}
-                     id="period"
-                     ref={periodRef}
-                     error={periodError}
-                  />
-               </div>
-               <div>
-                  <Input
-                     label="Descrição"
-                     defaultValue={task?.description}
-                     id="description"
-                     ref={descriptionRef}
-                     error={descriptionError}
-                  />
-               </div>
-            </div>
 
-            {/* botões de salvar/cancelar */}
-            <div className="flex justify-end">
-               <Button
-                  size="large"
-                  color="primary"
-                  onClick={handleEditClick}
-                  disabled={saveIsLoading}
-               >
-                  {saveIsLoading ? 'Salvando...' : 'Salvar'}
-               </Button>
-            </div>
+               {/* botões de salvar/cancelar */}
+               <div className="flex justify-end">
+                  <Button
+                     size="large"
+                     color="primary"
+                     type="submit"
+                     disabled={isSubmitting}
+                  >
+                     {isSubmitting ? 'Salvando...' : 'Salvar'}
+                  </Button>
+               </div>
+            </form>
          </div>
       </div>
    );
