@@ -1,5 +1,6 @@
 import './AddTaskDialog.css';
 
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useForm } from 'react-hook-form';
@@ -11,11 +12,27 @@ import Button from './Button';
 import Input from './Input';
 import PeriodSelect from './PeriodSelect';
 
-const AddTaskDialog = ({ isOpen, handleCloseDialog, onSubmitSucess }) => {
+const AddTaskDialog = ({ isOpen, handleCloseDialog }) => {
    const nodeRef = useRef(null);
+   const queryClient = useQueryClient();
+   const { mutate, isPending } = useMutation({
+      mutationKey: ['addTask'],
+      mutationFn: async (newTask) => {
+         const response = await fetch('http://localhost:3000/tasks', {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newTask),
+         });
+
+         return response.json();
+      },
+   });
+
    const {
       register,
-      formState: { errors, isSubmitting },
+      formState: { errors },
       handleSubmit,
       reset,
    } = useForm({
@@ -35,28 +52,22 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog, onSubmitSucess }) => {
          status: 'not_started',
       };
 
-      try {
-         const response = await fetch('http://localhost:3000/tasks', {
-            method: 'POST',
-            headers: {
-               'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(newTask),
-         });
-
-         if (!response.ok) {
-            throw new Error('Erro ao criar tarefa. Tente novamente');
-         }
-      } catch (error) {
-         toast.error(error);
-      }
-
-      onSubmitSucess(newTask);
-      handleCloseDialog();
-      reset({
-         title: '',
-         description: '',
-         period: 'morning',
+      mutate(newTask, {
+         onSuccess: () => {
+            queryClient.setQueryData(['tasks'], (oldTask) => {
+               return [...oldTask, newTask];
+            });
+            handleCloseDialog();
+            reset({
+               title: '',
+               description: '',
+               period: 'morning',
+            });
+            toast.success('Tarefa criada com sucesso!');
+         },
+         onError: () => {
+            toast.error('Erro ao criar tarefa');
+         },
       });
    };
 
@@ -100,7 +111,7 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog, onSubmitSucess }) => {
                            label={'Titulo'}
                            id={'title'}
                            placeholder="Titulo"
-                           disabled={isSubmitting}
+                           disabled={isPending}
                            {...register('title', {
                               required: 'O titulo é obrigatório',
                               validate: (value) => {
@@ -115,7 +126,7 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog, onSubmitSucess }) => {
 
                         <PeriodSelect
                            id="period"
-                           disabled={isSubmitting}
+                           disabled={isPending}
                            {...register('period', {
                               required: 'O horário é obrigatório',
                               validate: (value) => {
@@ -132,7 +143,7 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog, onSubmitSucess }) => {
                            label={'Descrição'}
                            id={'description'}
                            placeholder="Descrição"
-                           disabled={isSubmitting}
+                           disabled={isPending}
                            {...register('description', {
                               required: 'A descrição é obrigatória',
                               validate: (value) => {
@@ -159,9 +170,9 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog, onSubmitSucess }) => {
                               size="large"
                               className="w-full"
                               type="submit"
-                              disabled={isSubmitting}
+                              disabled={isPending}
                            >
-                              {isSubmitting ? 'Salvando ...' : 'Salvar'}
+                              {isPending ? 'Salvando ...' : 'Salvar'}
                            </Button>
                         </div>
                      </form>

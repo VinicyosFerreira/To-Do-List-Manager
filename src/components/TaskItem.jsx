@@ -1,15 +1,14 @@
-import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { CheckIcon, DetailsIcon, LoaderIcon, TrashIcon } from '../assets/icons';
 import Button from './Button';
 
-const TaskItem = ({ task, handleCheckboxChange, onDeleteSuccess }) => {
-   const [deleteIsLoading, setDeleteIsLoading] = useState(false);
-
-   const handleDeleteClick = async () => {
-      setDeleteIsLoading(true);
-      try {
+const TaskItem = ({ task, handleCheckboxChange }) => {
+   const queryClient = useQueryClient();
+   const { mutate, isPending } = useMutation({
+      mutationKey: ['deleteTask', task.id],
+      mutationFn: async () => {
          const response = await fetch(
             `http://localhost:3000/tasks/${task.id}`,
             {
@@ -17,16 +16,22 @@ const TaskItem = ({ task, handleCheckboxChange, onDeleteSuccess }) => {
             }
          );
 
-         if (!response.ok) {
-            throw new Error('Erro ao deletar tarefa');
-         }
+         return response.json();
+      },
+   });
 
-         onDeleteSuccess(task.id);
-      } catch (error) {
-         toast.error(error);
-      } finally {
-         setDeleteIsLoading(false);
-      }
+   const handleDeleteClick = async () => {
+      mutate(undefined, {
+         onSuccess: () => {
+            queryClient.setQueryData(['tasks'], (oldTask) => {
+               return oldTask.filter((oldTask) => oldTask.id !== task.id);
+            });
+            toast.success('Tarefa excluida com sucesso!');
+         },
+         onError: () => {
+            toast.error('Erro ao deletar tarefa');
+         },
+      });
    };
    const getVariantClass = () => {
       if (task.status === 'done') {
@@ -66,9 +71,9 @@ const TaskItem = ({ task, handleCheckboxChange, onDeleteSuccess }) => {
             <Button
                color="ghost"
                onClick={handleDeleteClick}
-               disabled={deleteIsLoading}
+               disabled={isPending}
             >
-               {deleteIsLoading ? (
+               {isPending ? (
                   <LoaderIcon className="animate-spin text-brand-text-gray" />
                ) : (
                   <TrashIcon className="text-brand-text-gray" />

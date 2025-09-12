@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -16,20 +16,68 @@ import Sidebar from '../components/Sidebar';
 
 const TaskDetailsPage = () => {
    const { id: taskId } = useParams();
-   const [task, setTask] = useState();
-   const [deleteIsLoading, setDeleteIsLoading] = useState(false);
    const navigate = useNavigate();
-
+   const queryClient = useQueryClient();
    const {
       register,
-      formState: { errors, isSubmitting },
+      formState: { errors },
       handleSubmit,
       reset,
-   } = useForm({
-      defaultValues: {
-         title: task?.title,
-         description: task?.description,
-         period: task?.period,
+   } = useForm({});
+
+   const { data: task } = useQuery({
+      queryKey: ['task', taskId],
+      queryFn: async () => {
+         const response = await fetch(`http://localhost:3000/tasks/${taskId}`);
+         const responseData = await response.json();
+         reset(responseData);
+         return responseData;
+      },
+   });
+
+   const { mutate: deleteTask, isPending: isDeletePending } = useMutation({
+      mutationKey: ['deleteTask', taskId],
+      mutationFn: async () => {
+         const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
+            method: 'DELETE',
+         });
+         const deleteTask = await response.json();
+         queryClient.setQueryData(['tasks'], (oldTasks) => {
+            return oldTasks?.filter((oldTask) => oldTask.id !== deleteTask.id);
+         });
+      },
+   });
+
+   const { mutate: updateTask, isPending: isUpdatePending } = useMutation({
+      mutationKey: ['updateTask', taskId],
+      mutationFn: async (data) => {
+         const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
+            method: 'PATCH',
+            headers: {
+               'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+               title: data.title.trim(),
+               description: data.description.trim(),
+               period: data.period,
+            }),
+         });
+
+         if (!response.ok) {
+            throw new Error();
+         }
+
+         const updatedData = await response.json();
+         queryClient.setQueryData(['tasks'], (oldTasks) => {
+            return oldTasks?.map((oldTask) => {
+               if (oldTask.id === taskId) {
+                  return updatedData;
+               }
+               return oldTask;
+            });
+         });
+
+         return updatedData;
       },
    });
 
@@ -37,70 +85,34 @@ const TaskDetailsPage = () => {
       navigate(-1);
    };
 
-   useEffect(() => {
-      const fetchTasks = async () => {
-         try {
-            const response = await fetch(
-               `http://localhost:3000/tasks/${taskId}`
-            );
-            const data = await response.json();
-            setTask(data);
-            reset(data);
-         } catch (error) {
-            console.log(error);
-         }
-      };
-      fetchTasks();
-   }, [taskId, reset]);
-
    const handleEditClick = async (data) => {
-      try {
-         const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
-            method: 'PATCH',
-            headers: {
-               'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-         });
-
-         if (!response.ok) {
-            throw new Error('Erro ao editar tarefa. Tente novamente');
-         }
-
-         const responseData = await response.json();
-         setTask(responseData);
-         toast.success('Tarefa editada com sucesso!');
-      } catch (error) {
-         toast.error(error);
-      }
+      updateTask(data, {
+         onSuccess: () => {
+            toast.success('Tarefa editada com sucesso!');
+         },
+         onError: () => {
+            toast.error('Erro ao editar tarefa');
+         },
+      });
    };
 
    const handleDeleteClick = async () => {
-      setDeleteIsLoading(true);
-      try {
-         const response = await fetch(
-            `http://localhost:3000/tasks/${task.id}`,
-            {
-               method: 'DELETE',
-            }
-         );
+      deleteTask(undefined, {
+         onSuccess: () => {
+            toast.success('Tarefa excluida com sucesso!');
+            navigate(-1);
+         },
 
-         if (!response.ok) {
-            throw new Error('Erro ao deletar tarefa');
-         }
-         navigate(-1);
-         toast.success('Tarefa excluida com sucesso!');
-      } catch (error) {
-         toast.error(error);
-      } finally {
-         setDeleteIsLoading(false);
-      }
+         onError: (err) => {
+            console.log(err);
+            toast.error('Erro ao deletar tarefa');
+         },
+      });
    };
 
    return (
       <div className="flex">
          <Sidebar />
-
          <div className="w-full space-y-6 px-8 py-16">
             {/* barra do topo */}
             <div className="flex justify-between">
@@ -136,7 +148,7 @@ const TaskDetailsPage = () => {
                      className="flex items-center justify-center bg-brand-danger"
                      onClick={handleDeleteClick}
                   >
-                     {deleteIsLoading ? (
+                     {isDeletePending ? (
                         <LoaderIcon className="animate-spin text-brand-text-gray" />
                      ) : (
                         <TrashIcon />
@@ -153,6 +165,7 @@ const TaskDetailsPage = () => {
                      <Input
                         label="Nome"
                         id="title"
+                        defaultValue={task?.title}
                         {...register('title', {
                            required: 'O título é obrigatório',
                            validate: (value) => {
@@ -169,6 +182,7 @@ const TaskDetailsPage = () => {
                      <PeriodSelect
                         label="Horário"
                         id="period"
+                        defaultValue={task?.period}
                         {...register('period', {
                            required: 'O horário é obrigatório',
                            validate: (value) => {
@@ -185,6 +199,7 @@ const TaskDetailsPage = () => {
                      <Input
                         label="Descrição"
                         id="description"
+                        defaultValue={task?.description}
                         {...register('description', {
                            required: 'A descrição é obrigatória',
                            validate: (value) => {
@@ -205,9 +220,11 @@ const TaskDetailsPage = () => {
                      size="large"
                      color="primary"
                      type="submit"
-                     disabled={isSubmitting}
+                     disabled={isDeletePending || isUpdatePending}
                   >
-                     {isSubmitting ? 'Salvando...' : 'Salvar'}
+                     {isDeletePending || isUpdatePending
+                        ? 'Salvando...'
+                        : 'Salvar'}
                   </Button>
                </div>
             </form>

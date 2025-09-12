@@ -1,25 +1,3 @@
 {
-  "tasks": [
-    {
-      "id": "cc5b28b1-2ed6-4115-a43f-cd30e0699363",
-      "title": "TAREFAAA",
-      "description": "  DASDSAAAA",
-      "period": "evening",
-      "status": "not_started"
-    },
-    {
-      "id": "5342f433-e7d1-4318-8512-7a8a51132af2",
-      "title": "dsadas",
-      "description": "dsadsa",
-      "period": "morning",
-      "status": "not_started"
-    },
-    {
-      "id": "54af73b0-304a-4a69-916a-bd2f15b8e2e4",
-      "title": "adsdas",
-      "description": "dsadas",
-      "period": "morning",
-      "status": "not_started"
-    }
-  ]
+  "tasks": []
 }
