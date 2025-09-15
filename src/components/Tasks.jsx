@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -10,6 +10,7 @@ import {
    TrashIcon,
 } from '../assets/icons';
 import TasksSeparator from '../components/TasksSeparator';
+import { useGetTasks } from '../hooks/data/use-get-tasks';
 import AddTaskDialog from './AddTaskDialog';
 import Button from './Button';
 import TaskItem from './TaskItem';
@@ -17,17 +18,7 @@ import TaskItem from './TaskItem';
 const Tasks = () => {
    const [isOpenDialog, setIsOpenDialog] = useState(false);
    const queryClient = useQueryClient();
-
-   const { data: tasks } = useQuery({
-      queryKey: ['tasks'],
-      queryFn: async () => {
-         const response = await fetch('http://localhost:3000/tasks');
-         const responseData = await response.json();
-         return responseData;
-      },
-   });
-
-   console.log(tasks);
+   const { data: tasks } = useGetTasks();
 
    const morningTasks = tasks?.filter((task) => task.period === 'morning');
    const afternoonTasks = tasks?.filter((task) => task.period === 'afternoon');

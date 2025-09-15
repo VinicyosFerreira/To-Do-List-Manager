@@ -1,6 +1,5 @@
 import './AddTaskDialog.css';
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useForm } from 'react-hook-form';
@@ -8,27 +7,14 @@ import { CSSTransition } from 'react-transition-group';
 import { toast } from 'sonner';
 import { v4 } from 'uuid';
 
+import { useAddTasks } from '../hooks/data/use-add-tasks';
 import Button from './Button';
 import Input from './Input';
 import PeriodSelect from './PeriodSelect';
 
 const AddTaskDialog = ({ isOpen, handleCloseDialog }) => {
    const nodeRef = useRef(null);
-   const queryClient = useQueryClient();
-   const { mutate, isPending } = useMutation({
-      mutationKey: ['addTask'],
-      mutationFn: async (newTask) => {
-         const response = await fetch('http://localhost:3000/tasks', {
-            method: 'POST',
-            headers: {
-               'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(newTask),
-         });
-
-         return response.json();
-      },
-   });
+   const { mutate: addTask, isPending } = useAddTasks();
 
    const {
       register,
@@ -52,11 +38,8 @@ const AddTaskDialog = ({ isOpen, handleCloseDialog }) => {
          status: 'not_started',
       };
 
-      mutate(newTask, {
+      addTask(newTask, {
          onSuccess: () => {
-            queryClient.setQueryData(['tasks'], (oldTask) => {
-               return [...oldTask, newTask];
-            });
             handleCloseDialog();
             reset({
                title: '',
