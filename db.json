@@ -1,11 +1,3 @@
 {
-  "tasks": [
-    {
-      "id": "c9d4ff55-fdc8-4e0f-9457-fb364ae02175",
-      "title": "dsada'12'",
-      "description": "dasdas",
-      "period": "morning",
-      "status": "not_started"
-    }
-  ]
+  "tasks": []
 }
