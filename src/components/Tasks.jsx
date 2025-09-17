@@ -1,22 +1,14 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
 import { toast } from 'sonner';
 
-import {
-   AddIcon,
-   CloudSunIcon,
-   MoonIcon,
-   SunIcon,
-   TrashIcon,
-} from '../assets/icons';
+import { CloudSunIcon, MoonIcon, SunIcon } from '../assets/icons';
 import TasksSeparator from '../components/TasksSeparator';
 import { useGetTasks } from '../hooks/data/use-get-tasks';
-import AddTaskDialog from './AddTaskDialog';
-import Button from './Button';
+import { taskQueryKeys } from '../keys/queries';
+import Header from './Header';
 import TaskItem from './TaskItem';
 
 const Tasks = () => {
-   const [isOpenDialog, setIsOpenDialog] = useState(false);
    const queryClient = useQueryClient();
    const { data: tasks } = useGetTasks();
 
@@ -48,38 +40,12 @@ const Tasks = () => {
          return task;
       });
 
-      queryClient.setQueryData(['tasks'], newTasks);
+      queryClient.setQueryData(taskQueryKeys.getAll(), newTasks);
    };
 
    return (
       <div className="w-full space-y-6 px-8 py-16">
-         <div className="flex w-full justify-between">
-            <div>
-               <span className="text-xs font-semibold text-brand-primary">
-                  Minhas tarefas
-               </span>
-               <h2 className="text-xl font-semibold text-brand-dark-blue">
-                  Minhas tarefas
-               </h2>
-            </div>
-
-            <div className="flex h-min items-center gap-3">
-               <Button color="ghost">
-                  Limpar Tarefas
-                  <TrashIcon />
-               </Button>
-
-               <Button onClick={() => setIsOpenDialog(true)}>
-                  Nova Tarefa
-                  <AddIcon />
-               </Button>
-
-               <AddTaskDialog
-                  isOpen={isOpenDialog}
-                  handleCloseDialog={() => setIsOpenDialog(false)}
-               />
-            </div>
-         </div>
+         <Header subtitle="Minhas tarefas" title="Minhas tarefas" />
 
          {/* <TaskList /> */}
          <div className="rounded-xl bg-white p-6">
