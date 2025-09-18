@@ -11,12 +11,13 @@ export const useUpdateTask = (taskId) => {
       mutationKey: taskMutationKeys.update(taskId),
       mutationFn: async (data) => {
          const { data: updatedTask } = await api.patch(`/tasks/${taskId}`, {
-            title: data.title.trim(),
-            description: data.description.trim(),
-            period: data.period,
+            title: data.title?.trim(),
+            description: data?.description?.trim(),
+            period: data?.period,
+            status: data?.status,
          });
 
-         queryClient.setQueryData([taskQueryKeys.getAll()], (oldTasks) => {
+         queryClient.setQueryData(taskQueryKeys.getAll(), (oldTasks) => {
             return oldTasks?.map((oldTask) => {
                if (oldTask.id === taskId) {
                   return updatedTask;
@@ -25,7 +26,7 @@ export const useUpdateTask = (taskId) => {
             });
          });
 
-         queryClient.setQueryData(['task', taskId], updatedTask);
+         queryClient.setQueryData(taskQueryKeys.getOne(taskId), updatedTask);
       },
    });
 };

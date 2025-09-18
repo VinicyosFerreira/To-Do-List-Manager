@@ -2,21 +2,13 @@ import { toast } from 'sonner';
 
 import { CheckIcon, DetailsIcon, LoaderIcon, TrashIcon } from '../assets/icons';
 import { useDeleteTask } from '../hooks/data/use-delete-task';
+import { useUpdateTask } from '../hooks/data/use-update-task';
 import Button from './Button';
 
-const TaskItem = ({ task, handleCheckboxChange }) => {
-   const { mutate, isPending } = useDeleteTask(task.id);
+const TaskItem = ({ task }) => {
+   const { mutate: deleteTask, isPending } = useDeleteTask(task.id);
+   const { mutate: updateTask } = useUpdateTask(task.id);
 
-   const handleDeleteClick = async () => {
-      mutate(undefined, {
-         onSuccess: () => {
-            toast.success('Tarefa excluida com sucesso!');
-         },
-         onError: () => {
-            toast.error('Erro ao deletar tarefa');
-         },
-      });
-   };
    const getVariantClass = () => {
       if (task.status === 'done') {
          return 'bg-[#00ADB51A]  text-[#002C2E]';
@@ -27,6 +19,42 @@ const TaskItem = ({ task, handleCheckboxChange }) => {
       if (task.status === 'not_started') {
          return 'bg-brand-dark-blue bg-opacity-5 text-brand-dark-blue';
       }
+   };
+
+   const getNewStatus = () => {
+      if (task.status === 'not_started') {
+         return 'in_progress';
+      }
+      if (task.status === 'in_progress') {
+         return 'done';
+      }
+
+      return 'not_started';
+   };
+
+   const handleTaskCheckboxChange = () => {
+      updateTask(
+         { status: getNewStatus() },
+         {
+            onSuccess: () => {
+               toast.success('Tarefa atualizada com sucesso!');
+            },
+            onError: () => {
+               toast.error('Erro ao atualizar tarefa');
+            },
+         }
+      );
+   };
+
+   const handleDeleteClick = async () => {
+      deleteTask(undefined, {
+         onSuccess: () => {
+            toast.success('Tarefa excluida com sucesso!');
+         },
+         onError: () => {
+            toast.error('Erro ao deletar tarefa');
+         },
+      });
    };
 
    return (
@@ -41,7 +69,7 @@ const TaskItem = ({ task, handleCheckboxChange }) => {
                   type="checkbox"
                   checked={task.status === 'done'}
                   className="absolute h-full cursor-pointer opacity-0"
-                  onChange={() => handleCheckboxChange(task)}
+                  onChange={handleTaskCheckboxChange}
                />
                {task.status === 'done' && <CheckIcon />}
                {task.status === 'in_progress' && (
