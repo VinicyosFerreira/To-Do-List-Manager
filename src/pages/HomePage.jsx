@@ -1,51 +1,41 @@
-import {
-   GlassWaterIcon,
-   LayoutListIcon,
-   LoaderIcon,
-   TasksIcon,
-} from '../assets/icons';
-import DashboardCard from '../components/DashboardCard';
+import DashboardCards from '../components/DashboardCards';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
+import TaskItem from '../components/TaskItem';
 import { useGetTasks } from '../hooks/data/use-get-tasks';
 
 const HomePage = () => {
    const { data: tasks } = useGetTasks();
-
-   const inProgressTasks = tasks?.filter((task) => {
-      task.status === 'not_started';
-   }).length;
-
-   const inDoneTasks = tasks?.filter((task) => {
-      task.status === 'done';
-   }).length;
-
    return (
       <div className="flex">
          <Sidebar />
          <div className="w-full space-y-6 px-8 py-16">
             <Header subtitle="Início" title="Início" />
-            <div className="grid grid-cols-4 gap-9">
-               <DashboardCard
-                  icon={<LayoutListIcon />}
-                  mainText={tasks?.length}
-                  secondaryText="Tarefas disponíveis"
-               />
-               <DashboardCard
-                  icon={<TasksIcon />}
-                  mainText={inDoneTasks}
-                  secondaryText="Tarefas concluídas"
-               />
-               <DashboardCard
-                  icon={<LoaderIcon />}
-                  mainText={inProgressTasks}
-                  secondaryText="Tarefas em andamento"
-               />
-               <DashboardCard
-                  icon={<GlassWaterIcon />}
-                  mainText="40%"
-                  secondaryText="Água"
-               />
+            <DashboardCards />
+            <div className="grid grid-cols-[1.5fr,1fr] gap-6">
+               <div className="space-y-6 rounded-[10px] bg-brand-white p-6">
+                  <div>
+                     <h3 className="text-xl font-semibold text-brand-dark-blue">
+                        Tarefas
+                     </h3>
+                     <span className="text-sm text-brand-dark-gray">
+                        Resumo das tarefas principais
+                     </span>
+                  </div>
+
+                  <div className="space-y-3">
+                     {tasks?.map((task) => (
+                        <TaskItem task={task} key={task.id} />
+                     ))}
+                  </div>
+               </div>
+
+               <div className="flex items-center justify-center rounded-[10px] bg-brand-white p-6">
+                  <p className="text-brand-dark-gray">
+                     Cada pequena ação de hoje te aproxima das grandes
+                     conquistas de amanhã. Faça o que precisa ser feito!
+                  </p>
+               </div>
             </div>
          </div>
       </div>
