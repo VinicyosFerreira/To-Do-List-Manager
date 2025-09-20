@@ -6,13 +6,6 @@
       "description": "dsadasdas",
       "period": "morning",
       "status": "not_started"
-    },
-    {
-      "id": "3f9b4dba-e980-4914-8d36-dbfe80926698",
-      "title": "lavar carro",
-      "description": "teste",
-      "period": "morning",
-      "status": "not_started"
     }
   ]
 }
