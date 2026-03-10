@@ -23,7 +23,7 @@ const Header = ({ subtitle, title }) => {
    };
 
    return (
-      <div className="flex w-full justify-between">
+      <div className="flex w-full items-center justify-between">
          <div>
             <span className="text-xs font-semibold text-brand-primary">
                {subtitle}
@@ -34,13 +34,20 @@ const Header = ({ subtitle, title }) => {
          </div>
 
          <div className="flex h-min items-center gap-3">
-            <Button color="ghost" onClick={() => deleteAllTasksClick()}>
-               Limpar Tarefas
+            <Button
+               color="ghost"
+               className="flex items-center"
+               onClick={() => deleteAllTasksClick()}
+            >
+               <span>Limpar Tarefas</span>
                <TrashIcon />
             </Button>
 
-            <Button onClick={() => setIsOpenDialog(true)}>
-               Nova Tarefa
+            <Button
+               className="flex items-center"
+               onClick={() => setIsOpenDialog(true)}
+            >
+               <span>Nova Tarefa</span>
                <AddIcon />
             </Button>
 

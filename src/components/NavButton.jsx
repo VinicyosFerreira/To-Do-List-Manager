@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { tv } from 'tailwind-variants';
 
-const SidebarButton = ({ children, to }) => {
+const NavButton = ({ children, to }) => {
    const sidebar = tv({
       base: `flex items-center gap-2 rounded-[10px] px-6 py-3 text-sm`,
       variants: {
@@ -24,4 +24,4 @@ const SidebarButton = ({ children, to }) => {
    );
 };
 
-export default SidebarButton;
+export default NavButton;

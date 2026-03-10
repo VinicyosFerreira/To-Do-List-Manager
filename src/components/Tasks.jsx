@@ -12,7 +12,7 @@ const Tasks = () => {
    const eveningTasks = tasks?.filter((task) => task.period === 'evening');
 
    return (
-      <div className="w-full space-y-6 px-8 py-16">
+      <div className="mb-20 w-full space-y-6 px-3 py-8 md:mb-0 md:px-8 md:py-16">
          <Header subtitle="Minhas tarefas" title="Minhas tarefas" />
 
          {/* <TaskList /> */}

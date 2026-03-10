@@ -18,7 +18,7 @@ const DashboardCards = () => {
    }).length;
 
    return (
-      <div className="grid grid-cols-4 gap-9">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-9">
          <DashboardCard
             icon={<LayoutListIcon />}
             mainText={tasks?.length}

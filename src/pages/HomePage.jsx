@@ -1,18 +1,18 @@
 import DashboardCards from '../components/DashboardCards';
 import Header from '../components/Header';
-import Sidebar from '../components/Sidebar';
+import Navigation from '../components/Navigation';
 import TaskItem from '../components/TaskItem';
 import { useGetTasks } from '../hooks/data/use-get-tasks';
 
 const HomePage = () => {
    const { data: tasks } = useGetTasks();
    return (
-      <div className="flex">
-         <Sidebar />
-         <div className="w-full space-y-6 px-8 py-16">
+      <div className="flex flex-col md:flex-row">
+         <Navigation />
+         <div className="mb-20 w-full space-y-6 px-3 py-10 md:mb-0 md:px-8 md:py-16">
             <Header subtitle="Início" title="Início" />
             <DashboardCards />
-            <div className="grid grid-cols-[1.5fr,1fr] gap-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-[1.5fr,1fr]">
                <div className="space-y-6 rounded-[10px] bg-brand-white p-6">
                   <div>
                      <h3 className="text-xl font-semibold text-brand-dark-blue">

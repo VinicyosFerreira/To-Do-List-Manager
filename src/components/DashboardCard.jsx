@@ -7,7 +7,7 @@ const DashboardCard = ({ icon, mainText, secondaryText }) => {
                {mainText}
             </p>
          </div>
-         <p className="text-brand-dark-blue">{secondaryText}</p>
+         <p className="text-center text-brand-dark-blue">{secondaryText}</p>
       </div>
    );
 };

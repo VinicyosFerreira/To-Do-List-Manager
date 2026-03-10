@@ -10,8 +10,8 @@ import {
 } from '../assets/icons';
 import Button from '../components/Button';
 import Input from '../components/Input';
+import Navigation from '../components/Navigation';
 import PeriodSelect from '../components/PeriodSelect';
-import Sidebar from '../components/Sidebar';
 import { useDeleteTask } from '../hooks/data/use-delete-task';
 import { useGetTask } from '../hooks/data/use-get-task';
 import { useUpdateTask } from '../hooks/data/use-update-task';
@@ -66,7 +66,7 @@ const TaskDetailsPage = () => {
 
    return (
       <div className="flex">
-         <Sidebar />
+         <Navigation />
          <div className="w-full space-y-6 px-8 py-16">
             {/* barra do topo */}
             <div className="flex justify-between">
